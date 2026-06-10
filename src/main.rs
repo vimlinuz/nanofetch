@@ -6,70 +6,9 @@ use std::fmt;
 use std::fs::read_to_string;
 use std::{env, fmt::Display};
 
-struct CpuInfo {
-    model: String,
-    cores: String,
-    threads: String,
-}
+mod cpu;
 
-impl Display for CpuInfo {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(
-            f,
-            "CPU: {model}
-                Topology: {cores} cores, {threads} threads",
-            model = self.model,
-            cores = self.cores,
-            threads = self.threads
-        )
-    }
-}
-
-impl Default for CpuInfo {
-    fn default() -> Self {
-        Self {
-            model: String::from("Unknown"),
-            cores: String::from("Unknown"),
-            threads: String::from("Unknown"),
-        }
-    }
-}
-
-impl CpuInfo {
-    fn new(model: String, cores: String, threads: String) -> Self {
-        Self {
-            model,
-            cores,
-            threads,
-        }
-    }
-
-    fn get_cpu_info() -> CpuInfo {
-        if let Ok(cpuinfo) = fs::read_to_string("/proc/cpuinfo") {
-            let mut threads = cpuinfo.split("\n\n");
-            let mut cores = "";
-            let mut model = "";
-            if let Some(thread) = threads.next() {
-                thread.lines().for_each(|line| {
-                    if line.contains("cpu cores") {
-                        cores = line.split(":").last().unwrap_or("Unknown");
-                    }
-                    if line.contains("model name") {
-                        model = line.split(":").last().unwrap_or("Unknown");
-                    }
-                })
-            }
-
-            Self::new(
-                model.to_string(),
-                cores.to_string(),
-                threads.count().to_string(),
-            )
-        } else {
-            Self::default()
-        }
-    }
-}
+use cpu::CpuInfo;
 
 struct NanoFetch {
     username: String,
@@ -165,7 +104,6 @@ fn get_kernel() -> String {
 }
 
 fn get_memory() -> String {
-    // todo!()
     String::new()
 }
 
