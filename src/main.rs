@@ -1,14 +1,13 @@
-#![allow(unused)]
-use std::fmt::format;
 use std::fs;
 extern crate libc;
 use std::fmt;
-use std::fs::read_to_string;
 use std::{env, fmt::Display};
 
 mod cpu;
+mod memory;
 
 use cpu::CpuInfo;
+use memory::MemoryInfo;
 
 struct NanoFetch {
     username: String,
@@ -20,7 +19,7 @@ struct NanoFetch {
     session_type: String,
     terminal: String,
     editor: String,
-    memory: String,
+    memory_info: MemoryInfo,
     shell: String,
     uptime: String,
     colors: String,
@@ -38,7 +37,7 @@ impl NanoFetch {
             session_type: get_session_type(),
             terminal: get_terminal(),
             editor: get_editor(),
-            memory: get_memory(),
+            memory_info: MemoryInfo::get_memory_info(),
             shell: get_shell(),
             uptime: get_uptime(),
             colors: get_colors(),
@@ -57,7 +56,7 @@ impl Display for NanoFetch {
                 desktop: {desktop}({session_type})
                 terminal: {terminal}
                 editor: {editor}
-                memory: {memory}
+                {memory_info}
                 shell: {shell}
                 uptime: {uptime}",
             username = self.username,
@@ -69,7 +68,7 @@ impl Display for NanoFetch {
             terminal = self.terminal,
             editor = self.editor,
             session_type = self.session_type,
-            memory = self.memory,
+            memory_info = self.memory_info,
             shell = self.shell,
             uptime = self.uptime,
         )
@@ -101,10 +100,6 @@ fn get_kernel() -> String {
     let kernal = fs::read_to_string("/proc/sys/kernel/ostype").unwrap_or("Unknown".to_string());
     let version = fs::read_to_string("/proc/sys/kernel/osrelease").unwrap_or("Unknown".to_string());
     format!("{} {}", kernal.trim(), version.trim())
-}
-
-fn get_memory() -> String {
-    String::new()
 }
 
 fn get_uptime() -> String {
