@@ -50,14 +50,14 @@ impl CpuInfo {
             let mut cores = "";
             let mut model = "";
             if let Some(thread) = threads.next() {
-                for line in thread.lines() {
+                thread.lines().for_each(|line| {
                     if line.contains("cpu cores") {
                         cores = line.split(":").last().unwrap_or("Unknown");
                     }
                     if line.contains("model name") {
                         model = line.split(":").last().unwrap_or("Unknown");
                     }
-                }
+                })
             }
 
             Self::new(
