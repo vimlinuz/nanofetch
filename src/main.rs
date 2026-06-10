@@ -1,17 +1,82 @@
 #![allow(unused)]
+use std::fmt::format;
 use std::fs;
 extern crate libc;
 use std::fmt;
 use std::fs::read_to_string;
 use std::{env, fmt::Display};
 
+struct CpuInfo {
+    model: String,
+    cores: String,
+    threads: String,
+}
+
+impl Display for CpuInfo {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(
+            f,
+            "CPU: {model}
+                Topology: {cores} cores, {threads} threads",
+            model = self.model,
+            cores = self.cores,
+            threads = self.threads
+        )
+    }
+}
+
+impl Default for CpuInfo {
+    fn default() -> Self {
+        Self {
+            model: String::from("Unknown"),
+            cores: String::from("Unknown"),
+            threads: String::from("Unknown"),
+        }
+    }
+}
+
+impl CpuInfo {
+    fn new(model: String, cores: String, threads: String) -> Self {
+        Self {
+            model,
+            cores,
+            threads,
+        }
+    }
+
+    fn get_cpu_info() -> CpuInfo {
+        if let Ok(cpuinfo) = fs::read_to_string("/proc/cpuinfo") {
+            let mut threads = cpuinfo.split("\n\n");
+            let mut cores = "";
+            let mut model = "";
+            if let Some(thread) = threads.next() {
+                for line in thread.lines() {
+                    if line.contains("cpu cores") {
+                        cores = line.split(":").last().unwrap_or("Unknown");
+                    }
+                    if line.contains("model name") {
+                        model = line.split(":").last().unwrap_or("Unknown");
+                    }
+                }
+            }
+
+            Self::new(
+                model.to_string(),
+                cores.to_string(),
+                threads.count().to_string(),
+            )
+        } else {
+            Self::default()
+        }
+    }
+}
+
 struct NanoFetch {
     username: String,
     hostname: String,
     system: String,
     kernel: String,
-    cpu: String,
-    topology: String,
+    cpu_info: CpuInfo,
     desktop: String,
     session_type: String,
     terminal: String,
@@ -29,8 +94,7 @@ impl NanoFetch {
             hostname: get_hostname(),
             system: get_system(),
             kernel: get_kernel(),
-            cpu: get_cpu(),
-            topology: get_topology(),
+            cpu_info: CpuInfo::get_cpu_info(),
             desktop: get_desktop(),
             session_type: get_session_type(),
             terminal: get_terminal(),
@@ -47,23 +111,21 @@ impl Display for NanoFetch {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(
             f,
-            "{username}@{hostname}\n 
-                system: {system}\n
-                kernel: {kernel}\n
-                cpu: {cpu}\n
-                topoloty: {topology}\n 
-                desktop: {desktop}({session_type})\n
-                terminal: {terminal}\n
-                editor: {editor}\n
-                memory: {memory}\n
-                shell: {shell} \n
+            "{username}@{hostname}\n
+                system: {system}
+                kernel: {kernel}
+                {cpu_info}
+                desktop: {desktop}({session_type})
+                terminal: {terminal}
+                editor: {editor}
+                memory: {memory}
+                shell: {shell}
                 uptime: {uptime}",
             username = self.username,
             hostname = self.hostname,
             system = self.system,
             kernel = self.kernel,
-            cpu = self.cpu,
-            topology = self.topology,
+            cpu_info = self.cpu_info,
             desktop = self.desktop,
             terminal = self.terminal,
             editor = self.editor,
@@ -99,20 +161,12 @@ fn get_kernel() -> String {
     // https://man.archlinux.org/man/proc_version.5.en
     let kernal = fs::read_to_string("/proc/sys/kernel/ostype").unwrap_or("Unknown".to_string());
     let version = fs::read_to_string("/proc/sys/kernel/osrelease").unwrap_or("Unknown".to_string());
-    format!("{kernal} {version}")
-}
-
-fn get_cpu() -> String {
-    todo!()
-}
-
-fn get_topology() -> String {
-    //  /proc/cpuinfo
-    todo!("need to write parser")
+    format!("{} {}", kernal.trim(), version.trim())
 }
 
 fn get_memory() -> String {
-    todo!()
+    // todo!()
+    String::new()
 }
 
 fn get_uptime() -> String {
