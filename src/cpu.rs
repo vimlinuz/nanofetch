@@ -3,9 +3,9 @@ use std::fmt::Display;
 use std::fs;
 
 pub struct CpuInfo {
-    model: String,
-    cores: String,
-    threads: String,
+    pub model: String,
+    pub cores: String,
+    pub threads: String,
 }
 
 impl Display for CpuInfo {

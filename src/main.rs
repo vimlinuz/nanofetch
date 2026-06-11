@@ -9,6 +9,33 @@ mod memory;
 use cpu::CpuInfo;
 use memory::MemoryInfo;
 
+const LOGO: &[&str] = &[
+    "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⣾⣻⣥⣴⣾⣛⠉⠀⠀⠀⠀",
+    "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣴⣟⡟⠛⠒⠶⣌⠉⠻⣶⣀⠀⠀",
+    "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣠⣤⣤⣤⣀⠀⠀⠀⠀⠀⢀⣤⣄⠀⠀⣾⣿⠿⠷⣄⠀⢠⣼⡇⠀⠹⣿⣆⠀",
+    "⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡴⠋⠁⠀⠀⠀⠉⢳⡄⠀⠀⢠⠏⠀⠉⠀⣼⡟⠀⠀⠀⠀⣀⣤⣅⠀⠀⠀⠉⣿⡆",
+    "⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⡟⠂⠀⠀⠀⣀⡀⢨⡇⠀⣤⣜⡶⠆⠀⠀⣿⠀⠀⠀⠀⢰⣿⠙⠛⠀⠀⠀⣠⡿⠀",
+    "⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⠀⠀⠀⠀⠀⠻⠿⠟⠁⠀⠀⣿⠁⢰⡏⠀⢿⡀⠀⠀⠀⠀⠻⣤⣀⣾⣿⣿⠿⠁⠀",
+    "⠀⢀⡀⠀⠀⠀⠀⠀⠀⢿⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠸⣤⣾⡆⠀⣨⣷⣦⣄⢸⠟⢀⣈⠉⠛⠉⠁⠀⠀⠀",
+    "⡾⠋⣿⠀⠀⠀⠀⠀⠀⠀⠻⣄⠀⡀⠀⠀⠀⠀⠀⠀⠀⠀⢙⡿⣷⡐⣧⠉⢧⡈⠻⣇⣟⠙⠁⠀⢀⣤⠔⠀⠀",
+    "⢧⠀⠀⠀⠀⠀⠀⠀⠀⣠⡄⠈⠙⠻⠷⣦⣀⣀⠀⠀⠀⠐⠛⠛⠿⣷⡀⠀⠈⠻⣶⡈⢿⡇⠀⠀⣾⠁⠀⠀⠀",
+    "⠈⠶⣆⠀⠀⠀⠀⢰⠀⠙⠳⠦⣤⣤⣠⣤⡬⣭⣿⣿⣿⣿⣶⣾⣷⣦⣿⣦⣄⠀⢈⢿⡘⣷⠀⢠⣿⠀⠀⠀⠀",
+    "⠀⠀⠈⠙⠒⠂⠆⣿⡷⠆⠒⠚⠛⣉⡵⠟⠋⠉⠀⠀⠀⠀⠀⣰⣾⠿⢿⣯⣿⣷⣼⣦⠳⡜⣆⠘⣿⡄⠀⠀⠀",
+    "⠀⠀⠀⠀⠀⠀⠀⠋⠀⠀⠀⣠⡾⠋⠀⠀⠀⠀⠀⠀⠀⠀⢸⡋⠀⠀⠀⢀⡎⠉⠻⢿⣷⡹⣾⠆⣾⣿⡀⠀⠀",
+    "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣼⡿⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⢁⡀⠀⣀⣸⣿⡆⡀⠀⠙⢿⣞⠆⠻⣿⣧⠀⠀",
+    "⠀⠀⠀⠀⠀⠀⠀⠀⠀⢰⡏⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢈⢿⡏⠉⣼⠟⠁⠉⠙⠶⣄⠹⣇⠀⠙⣿⡆⠀",
+    "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠸⣇⠀⠘⣻⡆⠀⠀⠀⠀⠀⠀⠀⠀⡜⠈⠁⡀⠛⠀⠀⠀⢠⣤⣌⣳⡜⢧⣸⣼⣷⠀",
+    "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⠳⠾⠛⠀⠀⠀⠀⠀⠀⠀⠀⠀⠸⣄⣈⣿⠀⢀⣶⠿⠛⠛⠛⠻⢿⣿⣝⣿⣿⡆",
+    "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠉⠁⠀⠘⠁⠀⠀⠀⠀⠀⠀⠙⢿⣟⣿⡇",
+    "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⣴⠶⠶⣦⣄⠀⠀⠀⣠⣤⣄⡀⠀⠈⣿⣿⡇",
+    "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⡾⡫⢤⡀⠀⠀⠹⣧⡀⠘⠇⠀⠙⢿⣤⡀⣿⣿⡇",
+    "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⠛⠀⠀⣠⣤⠀⠀⣹⡇⠀⠀⠀⠀⠘⣿⣇⣿⡟⠀",
+    "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⡀⠀⠀⣻⣯⣀⣴⠟⠁⠀⠀⠀⠀⢸⣿⣿⡿⠀⠀",
+    "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠹⣧⠀⠈⠋⠉⠉⠁⠀⠀⠀⠀⠀⣠⣾⣿⠋⠀⠀⠀",
+    "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⣷⣤⣀⣀⣴⠇⠀⠀⣀⣤⣾⡿⠟⠁⠀⠀⠀⠀",
+    "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠛⠿⠿⠿⠿⠟⠟⠛⠉⠀⠀⠀⠀⠀⠀⠀",
+];
+
 struct NanoFetch {
     username: String,
     hostname: String,
@@ -47,33 +74,66 @@ impl NanoFetch {
 
 impl Display for NanoFetch {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(
-            f,
-            "{username}@{hostname}\n
-                system: {system}
-                kernel: {kernel}
-                {cpu_info}
-                desktop: {desktop}({session_type})
-                terminal: {terminal}
-                editor: {editor}
-                {memory_info}
-                shell: {shell}
-                uptime: {uptime}
-                colors: {colors}",
-            username = self.username,
-            hostname = self.hostname,
-            system = self.system,
-            kernel = self.kernel,
-            cpu_info = self.cpu_info,
-            desktop = self.desktop,
-            terminal = self.terminal,
-            editor = self.editor,
-            session_type = self.session_type,
-            memory_info = self.memory_info,
-            shell = self.shell,
-            uptime = self.uptime,
-            colors = self.colors,
-        )
+        let header = format!("\x1b[1m{}@{}\x1b[0m", self.username, self.hostname);
+
+        let info: Vec<String> = vec![
+            header,
+            format!("    {:10} {}", "OS:", self.system),
+            format!("    {:10} {}", "Kernel:", self.kernel),
+            format!("    {:10} {}", "CPU:", self.cpu_info.model),
+            format!(
+                "    {:10} {} cores, {} threads",
+                "Topology:", self.cpu_info.cores, self.cpu_info.threads
+            ),
+            format!("    {:10} {}({})", "DE:", self.desktop, self.session_type),
+            format!("    {:10} {}", "Terminal:", self.terminal),
+            format!("    {:10} {}", "Editor:", self.editor),
+            format!(
+                "    {:10} {:.2} GiB / {:.2} GiB ({:.0}%)",
+                "Memory:",
+                self.memory_info.used_memory,
+                self.memory_info.total_memory,
+                self.memory_info.used_percentage
+            ),
+            format!("    {:10} {}", "Shell:", self.shell),
+            format!("    {:10} {}", "Uptime:", self.uptime),
+            format!("    {:10} {}", "Colors:", self.colors),
+        ];
+
+        let logo_width = LOGO.iter().map(|l| l.len()).max().unwrap_or(0);
+        let total = info.len().max(LOGO.len());
+
+        for i in 0..total {
+            let logo_line = LOGO.get(i);
+            let info_line = info.get(i);
+
+            if logo_line.is_none() && info_line.is_none() {
+                break;
+            }
+
+            if let Some(logo) = logo_line {
+                write!(
+                    f,
+                    "\x1b[36m{}\x1b[0m  {}",
+                    logo,
+                    info_line.map(|s| s.as_str()).unwrap_or("")
+                )?;
+            } else {
+                write!(
+                    f,
+                    "{:width$}  {}",
+                    "",
+                    info_line.map(|s| s.as_str()).unwrap_or(""),
+                    width = logo_width
+                )?;
+            }
+
+            if i < total - 1 {
+                writeln!(f)?;
+            }
+        }
+
+        Ok(())
     }
 }
 

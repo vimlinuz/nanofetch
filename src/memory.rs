@@ -1,9 +1,9 @@
 use std::{fmt, fs};
 
 pub struct MemoryInfo {
-    total_memory: f64,
-    used_memory: f64,
-    used_percentage: f64,
+    pub total_memory: f64,
+    pub used_memory: f64,
+    pub used_percentage: f64,
 }
 
 impl fmt::Display for MemoryInfo {
