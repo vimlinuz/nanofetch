@@ -10,17 +10,21 @@ impl fmt::Display for MemoryInfo {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(
             f,
-            "memory: {}GiB / {}GiB ({}%)",
+            "Memory: {:.2} GiB / {:.2} GiB ({:.2}%)",
             self.used_memory, self.total_memory, self.used_percentage
         )
     }
 }
 
 impl MemoryInfo {
+    fn into_gib(size: f64) -> f64 {
+        size / (1024 * 1024) as f64
+    }
+
     fn new(total_memory: f64, used_memory: f64) -> Self {
         Self {
-            total_memory,
-            used_memory,
+            total_memory: Self::into_gib(total_memory),
+            used_memory: Self::into_gib(used_memory),
             used_percentage: ((used_memory / total_memory) * 100.0),
         }
     }
@@ -56,7 +60,8 @@ impl MemoryInfo {
                 }
             });
         };
+        let mem_used = mem_total - mem_available;
 
-        Self::new(mem_total, mem_available)
+        Self::new(mem_total, mem_used)
     }
 }
