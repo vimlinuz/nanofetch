@@ -207,7 +207,11 @@ fn get_username() -> String {
 }
 
 fn get_hostname() -> String {
-    env::var("HOSTNAME").unwrap_or("Unknown".to_string())
+    env::var("HOSTNAME")
+        .or_else(|_| {
+            std::fs::read_to_string("/proc/sys/kernel/hostname").map(|s| s.trim().to_string())
+        })
+        .unwrap_or_else(|_| "Unknown".to_string())
 }
 
 fn get_shell() -> String {
