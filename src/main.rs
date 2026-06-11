@@ -58,7 +58,8 @@ impl Display for NanoFetch {
                 editor: {editor}
                 {memory_info}
                 shell: {shell}
-                uptime: {uptime}",
+                uptime: {uptime}
+                colors: {colors}",
             username = self.username,
             hostname = self.hostname,
             system = self.system,
@@ -71,6 +72,7 @@ impl Display for NanoFetch {
             memory_info = self.memory_info,
             shell = self.shell,
             uptime = self.uptime,
+            colors = self.colors,
         )
     }
 }
@@ -84,7 +86,13 @@ fn get_terminal() -> String {
 }
 
 fn get_colors() -> String {
-    env::var("COLORTERM").unwrap_or("Unknown".to_string())
+    let mut colors = String::new();
+
+    for i in 0..8 {
+        colors.push_str(&format!("\x1b[38;5;{i}m \x1b[0m"));
+    }
+
+    colors
 }
 
 fn get_session_type() -> String {
