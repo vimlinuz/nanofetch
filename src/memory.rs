@@ -1,19 +1,9 @@
-use std::{fmt, fs};
+use std::fs;
 
 pub struct MemoryInfo {
     pub total_memory: f64,
     pub used_memory: f64,
     pub used_percentage: f64,
-}
-
-impl fmt::Display for MemoryInfo {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(
-            f,
-            "Memory: {:.2} GiB / {:.2} GiB ({:.2}%)",
-            self.used_memory, self.total_memory, self.used_percentage
-        )
-    }
 }
 
 impl MemoryInfo {

@@ -1,24 +1,9 @@
-use std::fmt;
-use std::fmt::Display;
 use std::fs;
 
 pub struct CpuInfo {
     pub model: String,
     pub cores: String,
     pub threads: String,
-}
-
-impl Display for CpuInfo {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(
-            f,
-            "CPU: {model}
-                Topology: {cores} cores, {threads} threads",
-            model = self.model,
-            cores = self.cores,
-            threads = self.threads
-        )
-    }
 }
 
 impl Default for CpuInfo {
@@ -48,10 +33,10 @@ impl CpuInfo {
             if let Some(thread) = threads.next() {
                 thread.lines().for_each(|line| {
                     if line.contains("cpu cores") {
-                        cores = line.split(":").last().unwrap_or("Unknown");
+                        cores = line.split(":").last().unwrap_or("Unknown").trim();
                     }
                     if line.contains("model name") {
-                        model = line.split(":").last().unwrap_or("Unknown");
+                        model = line.split(":").last().unwrap_or("Unknown").trim();
                     }
                 })
             }
