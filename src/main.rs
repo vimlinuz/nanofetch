@@ -3,6 +3,7 @@ extern crate libc;
 use std::fmt;
 use std::{env, fmt::Display};
 
+mod colors;
 mod cpu;
 mod memory;
 
@@ -75,35 +76,100 @@ impl NanoFetch {
 impl Display for NanoFetch {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let header = format!(
-            "\x1b[1m\x1b[33m{}\x1b[0m\x1b[91m@\x1b[0m\x1b[92m{}\x1b[0m",
-            self.username, self.hostname
+            "{}{}{}@{}{}{}{}{}",
+            colors::BOLD_YELLOW,
+            self.username,
+            colors::RESET,
+            colors::BRIGHT_RED,
+            colors::RESET,
+            colors::BRIGHT_GREEN,
+            self.hostname,
+            colors::RESET,
         );
 
         let info: Vec<String> = vec![
             header,
-            format!("    \x1b[34m{:10}\x1b[0m {}", "OS:", self.system),
-            format!("    \x1b[34m{:10}\x1b[0m {}", "Kernel:", self.kernel),
-            format!("    \x1b[34m{:10}\x1b[0m {}", "CPU:", self.cpu_info.model),
             format!(
-                "    \x1b[34m{:10}\x1b[0m {} cores, {} threads",
-                "Topology:", self.cpu_info.cores, self.cpu_info.threads
+                "    {blue}{:10}{reset} {}",
+                "OS:",
+                self.system,
+                blue = colors::BLUE,
+                reset = colors::RESET
             ),
             format!(
-                "    \x1b[34m{:10}\x1b[0m {}({})",
-                "DE:", self.desktop, self.session_type
+                "    {blue}{:10}{reset} {}",
+                "Kernel:",
+                self.kernel,
+                blue = colors::BLUE,
+                reset = colors::RESET
             ),
-            format!("    \x1b[34m{:10}\x1b[0m {}", "Terminal:", self.terminal),
-            format!("    \x1b[34m{:10}\x1b[0m {}", "Editor:", self.editor),
             format!(
-                "    \x1b[34m{:10}\x1b[0m {:.2} GiB / {:.2} GiB ({:.0}%)",
+                "    {blue}{:10}{reset} {}",
+                "CPU:",
+                self.cpu_info.model,
+                blue = colors::BLUE,
+                reset = colors::RESET
+            ),
+            format!(
+                "    {blue}{:10}{reset} {} cores, {} threads",
+                "Topology:",
+                self.cpu_info.cores,
+                self.cpu_info.threads,
+                blue = colors::BLUE,
+                reset = colors::RESET
+            ),
+            format!(
+                "    {blue}{:10}{reset} {}({})",
+                "DE:",
+                self.desktop,
+                self.session_type,
+                blue = colors::BLUE,
+                reset = colors::RESET
+            ),
+            format!(
+                "    {blue}{:10}{reset} {}",
+                "Terminal:",
+                self.terminal,
+                blue = colors::BLUE,
+                reset = colors::RESET
+            ),
+            format!(
+                "    {blue}{:10}{reset} {}",
+                "Editor:",
+                self.editor,
+                blue = colors::BLUE,
+                reset = colors::RESET
+            ),
+            format!(
+                "    {blue}{:10}{reset} {:.2} GiB / {:.2} GiB ({:.0}%)",
                 "Memory:",
                 self.memory_info.used_memory,
                 self.memory_info.total_memory,
-                self.memory_info.used_percentage
+                self.memory_info.used_percentage,
+                blue = colors::BLUE,
+                reset = colors::RESET
             ),
-            format!("    \x1b[34m{:10}\x1b[0m {}", "Shell:", self.shell),
-            format!("    \x1b[34m{:10}\x1b[0m {}", "Uptime:", self.uptime),
-            format!("    \x1b[34m{:10}\x1b[0m {}", "Colors:", self.colors),
+            format!(
+                "    {blue}{:10}{reset} {}",
+                "Shell:",
+                self.shell,
+                blue = colors::BLUE,
+                reset = colors::RESET
+            ),
+            format!(
+                "    {blue}{:10}{reset} {}",
+                "Uptime:",
+                self.uptime,
+                blue = colors::BLUE,
+                reset = colors::RESET
+            ),
+            format!(
+                "    {blue}{:10}{reset} {}",
+                "Colors:",
+                self.colors,
+                blue = colors::BLUE,
+                reset = colors::RESET
+            ),
         ];
 
         let logo_width = LOGO.iter().map(|l| l.len()).max().unwrap_or(0);
@@ -120,9 +186,11 @@ impl Display for NanoFetch {
             if let Some(logo) = logo_line {
                 write!(
                     f,
-                    "\x1b[36m{}\x1b[0m  {}",
+                    "{cyan}{}{reset}  {}",
                     logo,
-                    info_line.map(|s| s.as_str()).unwrap_or("")
+                    info_line.map(|s| s.as_str()).unwrap_or(""),
+                    cyan = colors::CYAN,
+                    reset = colors::RESET,
                 )?;
             } else {
                 write!(
@@ -155,7 +223,7 @@ fn get_colors() -> String {
     let mut colors = String::new();
 
     for i in 0..8 {
-        colors.push_str(&format!("\x1b[38;5;{i}m \x1b[0m"));
+        colors.push_str(&format!("{}{}{}", colors::color256(i), " ", colors::RESET));
     }
 
     colors
