@@ -74,30 +74,36 @@ impl NanoFetch {
 
 impl Display for NanoFetch {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let header = format!("\x1b[1m{}@{}\x1b[0m", self.username, self.hostname);
+        let header = format!(
+            "\x1b[1m\x1b[33m{}\x1b[0m\x1b[91m@\x1b[0m\x1b[92m{}\x1b[0m",
+            self.username, self.hostname
+        );
 
         let info: Vec<String> = vec![
             header,
-            format!("    {:10} {}", "OS:", self.system),
-            format!("    {:10} {}", "Kernel:", self.kernel),
-            format!("    {:10} {}", "CPU:", self.cpu_info.model),
+            format!("    \x1b[34m{:10}\x1b[0m {}", "OS:", self.system),
+            format!("    \x1b[34m{:10}\x1b[0m {}", "Kernel:", self.kernel),
+            format!("    \x1b[34m{:10}\x1b[0m {}", "CPU:", self.cpu_info.model),
             format!(
-                "    {:10} {} cores, {} threads",
+                "    \x1b[34m{:10}\x1b[0m {} cores, {} threads",
                 "Topology:", self.cpu_info.cores, self.cpu_info.threads
             ),
-            format!("    {:10} {}({})", "DE:", self.desktop, self.session_type),
-            format!("    {:10} {}", "Terminal:", self.terminal),
-            format!("    {:10} {}", "Editor:", self.editor),
             format!(
-                "    {:10} {:.2} GiB / {:.2} GiB ({:.0}%)",
+                "    \x1b[34m{:10}\x1b[0m {}({})",
+                "DE:", self.desktop, self.session_type
+            ),
+            format!("    \x1b[34m{:10}\x1b[0m {}", "Terminal:", self.terminal),
+            format!("    \x1b[34m{:10}\x1b[0m {}", "Editor:", self.editor),
+            format!(
+                "    \x1b[34m{:10}\x1b[0m {:.2} GiB / {:.2} GiB ({:.0}%)",
                 "Memory:",
                 self.memory_info.used_memory,
                 self.memory_info.total_memory,
                 self.memory_info.used_percentage
             ),
-            format!("    {:10} {}", "Shell:", self.shell),
-            format!("    {:10} {}", "Uptime:", self.uptime),
-            format!("    {:10} {}", "Colors:", self.colors),
+            format!("    \x1b[34m{:10}\x1b[0m {}", "Shell:", self.shell),
+            format!("    \x1b[34m{:10}\x1b[0m {}", "Uptime:", self.uptime),
+            format!("    \x1b[34m{:10}\x1b[0m {}", "Colors:", self.colors),
         ];
 
         let logo_width = LOGO.iter().map(|l| l.len()).max().unwrap_or(0);
