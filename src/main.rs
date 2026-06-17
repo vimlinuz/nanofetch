@@ -6,9 +6,11 @@ use std::{env, fmt::Display};
 mod colors;
 mod cpu;
 mod memory;
+mod storage;
 
 use cpu::CpuInfo;
 use memory::MemoryInfo;
+use storage::StorageInfo;
 
 const LOGO: &[&str] = &[
     "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⣾⣻⣥⣴⣾⣛⠉⠀⠀⠀⠀",
@@ -48,6 +50,7 @@ struct NanoFetch {
     terminal: String,
     editor: String,
     memory_info: MemoryInfo,
+    storage_info: Vec<StorageInfo>,
     shell: String,
     uptime: String,
     colors: String,
@@ -66,6 +69,7 @@ impl NanoFetch {
             terminal: get_terminal(),
             editor: get_editor(),
             memory_info: MemoryInfo::get_memory_info(),
+            storage_info: StorageInfo::get_storage_info(),
             shell: get_shell(),
             uptime: get_uptime(),
             colors: get_colors(),
@@ -87,7 +91,7 @@ impl Display for NanoFetch {
             colors::RESET,
         );
 
-        let info: Vec<String> = vec![
+        let mut info: Vec<String> = vec![
             header,
             format!(
                 "    {blue}{:10}{reset} {}",
@@ -171,6 +175,22 @@ impl Display for NanoFetch {
                 reset = colors::RESET
             ),
         ];
+
+        for mount in &self.storage_info {
+            info.push(format!(
+                "    {blue}{:10}{reset} {:.2} GiB / {:.2} GiB ({:.0}%)",
+                if mount.mount_point == "/" {
+                    "Storage:".to_string()
+                } else {
+                    mount.mount_point.clone()
+                },
+                mount.used,
+                mount.total,
+                mount.used_percentage,
+                blue = colors::BLUE,
+                reset = colors::RESET
+            ));
+        }
 
         let logo_width = LOGO.iter().map(|l| l.len()).max().unwrap_or(0);
         let total = info.len().max(LOGO.len());
