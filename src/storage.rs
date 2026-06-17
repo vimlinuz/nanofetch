@@ -1,6 +1,6 @@
+use libc;
 use std::ffi::CString;
 use std::fs;
-use libc;
 
 fn into_gb(size: u64) -> f64 {
     size as f64 / (1024.0 * 1024.0 * 1024.0)
@@ -16,8 +16,8 @@ pub struct StorageInfo {
 impl StorageInfo {
     pub fn get_storage_info() -> Vec<StorageInfo> {
         let real_fs = [
-            "ext4", "ext3", "ext2", "xfs", "btrfs", "zfs",
-            "ntfs", "vfat", "fuseblk", "f2fs", "jfs", "reiserfs",
+            "ext4", "ext3", "ext2", "xfs", "btrfs", "zfs", "ntfs", "vfat", "fuseblk", "f2fs",
+            "jfs", "reiserfs",
         ];
 
         let Ok(content) = fs::read_to_string("/proc/mounts") else {

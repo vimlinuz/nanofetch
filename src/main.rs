@@ -80,7 +80,7 @@ impl NanoFetch {
 impl Display for NanoFetch {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let header = format!(
-            "{}{}{}@{}{}{}{}{}",
+            "{}{}{}{}@{}{}{}{}",
             colors::BOLD_YELLOW,
             self.username,
             colors::RESET,
@@ -94,59 +94,59 @@ impl Display for NanoFetch {
         let mut info: Vec<String> = vec![
             header,
             format!(
-                "    {blue}{:10}{reset} {}",
-                "OS:",
+                "{blue}{:13}{reset}  {}",
+                "OS",
                 self.system,
                 blue = colors::BLUE,
                 reset = colors::RESET
             ),
             format!(
-                "    {blue}{:10}{reset} {}",
-                "Kernel:",
+                "{blue}{:13}{reset}  {}",
+                "Kernel",
                 self.kernel,
                 blue = colors::BLUE,
                 reset = colors::RESET
             ),
             format!(
-                "    {blue}{:10}{reset} {}",
-                "CPU:",
+                "{blue}{:13}{reset}  {}",
+                "CPU",
                 self.cpu_info.model,
                 blue = colors::BLUE,
                 reset = colors::RESET
             ),
             format!(
-                "    {blue}{:10}{reset} {} cores, {} threads",
-                "Topology:",
+                "{blue}{:13}{reset}  {} cores, {} threads",
+                "Topology",
                 self.cpu_info.cores,
                 self.cpu_info.threads,
                 blue = colors::BLUE,
                 reset = colors::RESET
             ),
             format!(
-                "    {blue}{:10}{reset} {}({})",
-                "DE:",
+                "{blue}{:13}{reset}  {}({})",
+                "DE",
                 self.desktop,
                 self.session_type,
                 blue = colors::BLUE,
                 reset = colors::RESET
             ),
             format!(
-                "    {blue}{:10}{reset} {}",
-                "Terminal:",
+                "{blue}{:13}{reset}  {}",
+                "Terminal",
                 self.terminal,
                 blue = colors::BLUE,
                 reset = colors::RESET
             ),
             format!(
-                "    {blue}{:10}{reset} {}",
-                "Editor:",
+                "{blue}{:13}{reset}  {}",
+                "Editor",
                 self.editor,
                 blue = colors::BLUE,
                 reset = colors::RESET
             ),
             format!(
-                "    {blue}{:10}{reset} {:.2} GiB / {:.2} GiB ({:.0}%)",
-                "Memory:",
+                "{blue}{:13}{reset}  {:.2} GiB / {:.2} GiB ({:.0}%)",
+                "Memory",
                 self.memory_info.used_memory,
                 self.memory_info.total_memory,
                 self.memory_info.used_percentage,
@@ -154,43 +154,40 @@ impl Display for NanoFetch {
                 reset = colors::RESET
             ),
             format!(
-                "    {blue}{:10}{reset} {}",
-                "Shell:",
+                "{blue}{:13}{reset}  {}",
+                "Shell",
                 self.shell,
                 blue = colors::BLUE,
                 reset = colors::RESET
             ),
             format!(
-                "    {blue}{:10}{reset} {}",
-                "Uptime:",
+                "{blue}{:13}{reset}  {}",
+                "Uptime",
                 self.uptime,
-                blue = colors::BLUE,
-                reset = colors::RESET
-            ),
-            format!(
-                "    {blue}{:10}{reset} {}",
-                "Colors:",
-                self.colors,
                 blue = colors::BLUE,
                 reset = colors::RESET
             ),
         ];
 
-        for mount in &self.storage_info {
+        if let Some(root) = self.storage_info.iter().find(|m| m.mount_point == "/") {
             info.push(format!(
-                "    {blue}{:10}{reset} {:.2} GiB / {:.2} GiB ({:.0}%)",
-                if mount.mount_point == "/" {
-                    "Storage:".to_string()
-                } else {
-                    mount.mount_point.clone()
-                },
-                mount.used,
-                mount.total,
-                mount.used_percentage,
+                "{blue}{:13}{reset}  {:.2} GiB / {:.2} GiB ({:.0}%)",
+                "Storage",
+                root.used,
+                root.total,
+                root.used_percentage,
                 blue = colors::BLUE,
                 reset = colors::RESET
             ));
         }
+
+        info.push(format!(
+            "{blue}{:13}{reset}  {}",
+            "Colors",
+            self.colors,
+            blue = colors::BLUE,
+            reset = colors::RESET
+        ));
 
         let logo_width = LOGO.iter().map(|l| l.len()).max().unwrap_or(0);
         let total = info.len().max(LOGO.len());
