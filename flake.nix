@@ -25,6 +25,7 @@
           pkgs.clippy
           pkgs.rustfmt
           pkgs.rust-analyzer
+          pkgs.nodejs
         ];
 
       };

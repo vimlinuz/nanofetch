@@ -108,11 +108,12 @@ impl Display for NanoFetch {
                 reset = colors::RESET
             ),
             format!(
-                "{blue}{:13}{reset}  {}",
+                "{blue}{:13}{reset}  {} @ {}",
                 "CPU",
                 self.cpu_info.model,
+                self.cpu_info.max_freq,
                 blue = colors::BLUE,
-                reset = colors::RESET
+                reset = colors::RESET,
             ),
             format!(
                 "{blue}{:13}{reset}  {} cores, {} threads",
