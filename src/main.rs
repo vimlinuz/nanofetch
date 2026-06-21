@@ -9,6 +9,7 @@ mod memory;
 mod storage;
 
 use cpu::CpuInfo;
+use libc::system;
 use memory::MemoryInfo;
 use storage::StorageInfo;
 
@@ -252,7 +253,17 @@ fn get_session_type() -> String {
 }
 
 fn get_system() -> String {
-    env::var("system").unwrap_or("Unknown".to_string())
+    let mut sys = "";
+    if let Ok(contents) = fs::read_to_string("/etc/os-release") {
+        contents.lines().for_each(|line| {
+            if line.contains("PRETTY_NAME") {
+                sys = line.split('"').nth(1).unwrap_or("Unknown")
+            }
+        });
+        sys.to_string()
+    } else {
+        "Unknown".to_string()
+    }
 }
 
 fn get_kernel() -> String {
@@ -309,7 +320,11 @@ fn get_hostname() -> String {
 fn get_shell() -> String {
     let shell_path = env::var("SHELL");
     if let Ok(shell_path) = shell_path {
-        let shell = shell_path.split('/').last().unwrap().to_string();
+        let shell = shell_path
+            .split('/')
+            .last()
+            .unwrap_or("Unknown")
+            .to_string();
         shell
     } else {
         String::from("Unknown")
