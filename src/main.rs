@@ -7,6 +7,7 @@ mod colors;
 mod cpu;
 mod memory;
 mod storage;
+mod uptime;
 
 use cpu::CpuInfo;
 use memory::MemoryInfo;
@@ -71,7 +72,7 @@ impl NanoFetch {
             memory_info: MemoryInfo::get_memory_info(),
             storage_info: StorageInfo::get_storage_info(),
             shell: get_shell(),
-            uptime: get_uptime(),
+            uptime: uptime::get_uptime(),
             colors: get_colors(),
         }
     }
@@ -270,34 +271,6 @@ fn get_kernel() -> String {
     let kernal = fs::read_to_string("/proc/sys/kernel/ostype").unwrap_or("Unknown".to_string());
     let version = fs::read_to_string("/proc/sys/kernel/osrelease").unwrap_or("Unknown".to_string());
     format!("{} {}", kernal.trim(), version.trim())
-}
-
-fn get_uptime() -> String {
-    let Ok(content) = fs::read_to_string("/proc/uptime") else {
-        return String::from("Unknown");
-    };
-
-    let Some(first_field) = content.split_whitespace().next() else {
-        return String::from("Unknown");
-    };
-
-    let Ok(total_seconds) = first_field.parse::<f64>() else {
-        return String::from("Unknown");
-    };
-
-    let total_seconds = total_seconds as u64;
-
-    let days = total_seconds / 86400;
-    let hours = (total_seconds % 86400) / 3600;
-    let minutes = (total_seconds % 3600) / 60;
-
-    if days > 0 {
-        format!("{days}d {hours}h {minutes}m")
-    } else if hours > 0 {
-        format!("{hours}h {minutes}m")
-    } else {
-        format!("{minutes}m")
-    }
 }
 
 fn get_desktop() -> String {
