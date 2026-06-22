@@ -125,7 +125,7 @@ impl Display for NanoFetch {
                 reset = colors::RESET
             ),
             format!(
-                "{blue}{:13}{reset}  {}({})",
+                "{blue}{:13}{reset}  {} ({})",
                 "DE",
                 self.desktop,
                 self.session_type,
