@@ -9,7 +9,6 @@ mod memory;
 mod storage;
 
 use cpu::CpuInfo;
-use libc::system;
 use memory::MemoryInfo;
 use storage::StorageInfo;
 
