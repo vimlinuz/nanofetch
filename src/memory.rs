@@ -29,23 +29,22 @@ impl MemoryInfo {
                     && let Some(total) = line
                         .split(":")
                         .last()
-                        .map(|f| f.trim().split_whitespace().next().map(|s| s.to_string()))
+                        .map(|f| f.split_whitespace().next().map(|s| s.to_string()))
                 {
                     mem_total = total
                         .map(|s| s.parse::<f64>().unwrap_or(0.0))
                         .unwrap_or(0.0);
                 };
 
-                if line.contains("MemAvailable") {
-                    if let Some(available) = line
+                if line.contains("MemAvailable")
+                    && let Some(available) = line
                         .split(":")
                         .last()
-                        .map(|f| f.trim().split_whitespace().next().map(|s| s.to_string()))
-                    {
-                        mem_available = available
-                            .map(|s| s.parse::<f64>().unwrap_or(0.0))
-                            .unwrap_or(0.0);
-                    }
+                        .map(|f| f.split_whitespace().next().map(|s| s.to_string()))
+                {
+                    mem_available = available
+                        .map(|s| s.parse::<f64>().unwrap_or(0.0))
+                        .unwrap_or(0.0);
                 }
             });
         };

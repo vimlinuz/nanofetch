@@ -64,12 +64,11 @@ pub fn get_hostname() -> String {
 pub fn get_shell() -> String {
     let shell_path = env::var("SHELL");
     if let Ok(shell_path) = shell_path {
-        let shell = shell_path
+        shell_path
             .split('/')
-            .last()
+            .next_back()
             .unwrap_or("Unknown")
-            .to_string();
-        shell
+            .to_string()
     } else {
         String::from("Unknown")
     }
