@@ -16,6 +16,25 @@ use cpu::CpuInfo;
 use memory::MemoryInfo;
 use storage::StorageInfo;
 
+const ICON_OS: &str = "\u{F31A}";
+const ICON_KERNEL: &str = "\u{F013}";
+const ICON_CPU: &str = "\u{F2DB}";
+const ICON_TOPOLOGY: &str = "\u{F4BC}";
+const ICON_DE: &str = "\u{F108}";
+const ICON_TERMINAL: &str = "\u{F120}";
+const ICON_EDITOR: &str = "\u{F044}";
+const ICON_MEMORY: &str = "\u{F30DB}";
+const ICON_SHELL: &str = "\u{F489}";
+const ICON_UPTIME: &str = "\u{F017}";
+const ICON_STORAGE: &str = "\u{F0E0}";
+const ICON_COLORS: &str = "\u{F1FC}";
+const LABEL_WIDTH: usize = 20;
+
+fn label(icon: &str, text: &str) -> String {
+    let s = format!("{} {}", icon, text);
+    format!("{s:<w$}", w = LABEL_WIDTH)
+}
+
 const LOGO: &[&str] = &[
     "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⣾⣻⣥⣴⣾⣛⠉⠀⠀⠀⠀",
     "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣴⣟⡟⠛⠒⠶⣌⠉⠻⣶⣀⠀⠀",
@@ -111,60 +130,60 @@ impl Display for NanoFetch {
         let mut info: Vec<String> = vec![
             header,
             format!(
-                "{blue}{:13}{reset}  {}",
-                "OS",
+                "{blue}{}{reset}  {}",
+                label(ICON_OS, "OS"),
                 self.system,
                 blue = colors::BLUE,
                 reset = colors::RESET
             ),
             format!(
-                "{blue}{:13}{reset}  {}",
-                "Kernel",
+                "{blue}{}{reset}  {}",
+                label(ICON_KERNEL, "Kernel"),
                 self.kernel,
                 blue = colors::BLUE,
                 reset = colors::RESET
             ),
             format!(
-                "{blue}{:13}{reset}  {} @ {}",
-                "CPU",
+                "{blue}{}{reset}  {} @ {}",
+                label(ICON_CPU, "CPU"),
                 self.cpu_info.model,
                 self.cpu_info.max_freq,
                 blue = colors::BLUE,
                 reset = colors::RESET,
             ),
             format!(
-                "{blue}{:13}{reset}  {} cores, {} threads",
-                "Topology",
+                "{blue}{}{reset}  {} cores, {} threads",
+                label(ICON_TOPOLOGY, "Topology"),
                 self.cpu_info.cores,
                 self.cpu_info.threads,
                 blue = colors::BLUE,
                 reset = colors::RESET
             ),
             format!(
-                "{blue}{:13}{reset}  {} ({})",
-                "DE",
+                "{blue}{}{reset}  {} ({})",
+                label(ICON_DE, "DE"),
                 self.desktop,
                 self.session_type,
                 blue = colors::BLUE,
                 reset = colors::RESET
             ),
             format!(
-                "{blue}{:13}{reset}  {}",
-                "Terminal",
+                "{blue}{}{reset}  {}",
+                label(ICON_TERMINAL, "Terminal"),
                 self.terminal,
                 blue = colors::BLUE,
                 reset = colors::RESET
             ),
             format!(
-                "{blue}{:13}{reset}  {}",
-                "Editor",
+                "{blue}{}{reset}  {}",
+                label(ICON_EDITOR, "Editor"),
                 self.editor,
                 blue = colors::BLUE,
                 reset = colors::RESET
             ),
             format!(
-                "{blue}{:13}{reset}  {:.2} GiB / {:.2} GiB ({:.0}%)",
-                "Memory",
+                "{blue}{}{reset}  {:.2} GiB / {:.2} GiB ({:.0}%)",
+                label(ICON_MEMORY, "Memory"),
                 self.memory_info.used_memory,
                 self.memory_info.total_memory,
                 self.memory_info.used_percentage,
@@ -172,15 +191,15 @@ impl Display for NanoFetch {
                 reset = colors::RESET
             ),
             format!(
-                "{blue}{:13}{reset}  {}",
-                "Shell",
+                "{blue}{}{reset}  {}",
+                label(ICON_SHELL, "Shell"),
                 self.shell,
                 blue = colors::BLUE,
                 reset = colors::RESET
             ),
             format!(
-                "{blue}{:13}{reset}  {}",
-                "Uptime",
+                "{blue}{}{reset}  {}",
+                label(ICON_UPTIME, "Uptime"),
                 self.uptime,
                 blue = colors::BLUE,
                 reset = colors::RESET
@@ -189,8 +208,8 @@ impl Display for NanoFetch {
 
         if let Some(root) = self.storage_info.iter().find(|m| m.mount_point == "/") {
             info.push(format!(
-                "{blue}{:13}{reset}  {:.2} GiB / {:.2} GiB ({:.0}%)",
-                "Storage",
+                "{blue}{}{reset}  {:.2} GiB / {:.2} GiB ({:.0}%)",
+                label(ICON_STORAGE, "Storage"),
                 root.used,
                 root.total,
                 root.used_percentage,
@@ -200,8 +219,8 @@ impl Display for NanoFetch {
         }
 
         info.push(format!(
-            "{blue}{:13}{reset}  {}",
-            "Colors",
+            "{blue}{}{reset}  {}",
+            label(ICON_COLORS, "Colors"),
             self.colors,
             blue = colors::BLUE,
             reset = colors::RESET
