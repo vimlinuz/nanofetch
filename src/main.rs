@@ -1,6 +1,8 @@
-use std::fmt;
 use std::fmt::Display;
+use std::path::PathBuf;
+use std::{fmt, fs};
 
+mod cli;
 mod colors;
 mod cpu;
 mod memory;
@@ -8,6 +10,8 @@ mod storage;
 mod uptime;
 mod utils;
 
+use clap::Parser;
+use cli::Args;
 use cpu::CpuInfo;
 use memory::MemoryInfo;
 use storage::StorageInfo;
@@ -54,10 +58,22 @@ struct NanoFetch {
     shell: String,
     uptime: String,
     colors: String,
+    logo: Vec<String>,
 }
 
 impl NanoFetch {
-    pub fn fetch() -> Self {
+    pub fn fetch(file_path: Option<PathBuf>) -> Self {
+        let mut logo = Vec::new();
+        if let Some(path) = file_path {
+            if let Ok(content) = fs::read_to_string(path) {
+                content.lines().for_each(|line| logo.push(line.to_string()))
+            }
+        }
+
+        if logo.len() == 0 {
+            LOGO.iter().for_each(|item| logo.push(item.to_string()));
+        }
+
         Self {
             username: utils::get_username(),
             hostname: utils::get_hostname(),
@@ -73,6 +89,7 @@ impl NanoFetch {
             shell: utils::get_shell(),
             uptime: uptime::get_uptime(),
             colors: utils::get_colors(),
+            logo,
         }
     }
 }
@@ -190,11 +207,11 @@ impl Display for NanoFetch {
             reset = colors::RESET
         ));
 
-        let logo_width = LOGO.iter().map(|l| l.len()).max().unwrap_or(0);
-        let total = info.len().max(LOGO.len());
+        let logo_width = self.logo.iter().map(|l| l.len()).max().unwrap_or(0);
+        let total = info.len().max(self.logo.len());
 
         for i in 0..total {
-            let logo_line = LOGO.get(i);
+            let logo_line = self.logo.get(i);
             let info_line = info.get(i);
 
             if logo_line.is_none() && info_line.is_none() {
@@ -230,6 +247,7 @@ impl Display for NanoFetch {
 }
 
 fn main() {
-    let fetch = NanoFetch::fetch();
+    let args = Args::parse();
+    let fetch = NanoFetch::fetch(args.icon);
     println!("{}", fetch);
 }
