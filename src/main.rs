@@ -248,6 +248,6 @@ impl Display for NanoFetch {
 
 fn main() {
     let args = Args::parse();
-    let fetch = NanoFetch::fetch(args.icon);
+    let fetch = NanoFetch::fetch(args.logo);
     println!("{}", fetch);
 }
