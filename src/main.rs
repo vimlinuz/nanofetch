@@ -89,7 +89,7 @@ impl NanoFetch {
             }
         }
 
-        if logo.len() == 0 {
+        if logo.is_empty() {
             LOGO.iter().for_each(|item| logo.push(item.to_string()));
         }
 

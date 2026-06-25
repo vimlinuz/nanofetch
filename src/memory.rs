@@ -25,16 +25,15 @@ impl MemoryInfo {
 
         if let Ok(content) = fs::read_to_string("/proc/meminfo") {
             content.lines().for_each(|line| {
-                if line.contains("MemTotal") {
-                    if let Some(total) = line
+                if line.contains("MemTotal")
+                    && let Some(total) = line
                         .split(":")
                         .last()
                         .map(|f| f.trim().split_whitespace().next().map(|s| s.to_string()))
-                    {
-                        mem_total = total
-                            .map(|s| s.parse::<f64>().unwrap_or(0.0))
-                            .unwrap_or(0.0);
-                    }
+                {
+                    mem_total = total
+                        .map(|s| s.parse::<f64>().unwrap_or(0.0))
+                        .unwrap_or(0.0);
                 };
 
                 if line.contains("MemAvailable") {
