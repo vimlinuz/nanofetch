@@ -1,13 +1,12 @@
-use std::fs;
-extern crate libc;
 use std::fmt;
-use std::{env, fmt::Display};
+use std::fmt::Display;
 
 mod colors;
 mod cpu;
 mod memory;
 mod storage;
 mod uptime;
+mod utils;
 
 use cpu::CpuInfo;
 use memory::MemoryInfo;
@@ -60,20 +59,20 @@ struct NanoFetch {
 impl NanoFetch {
     pub fn fetch() -> Self {
         Self {
-            username: get_username(),
-            hostname: get_hostname(),
-            system: get_system(),
-            kernel: get_kernel(),
+            username: utils::get_username(),
+            hostname: utils::get_hostname(),
+            system: utils::get_system(),
+            kernel: utils::get_kernel(),
             cpu_info: CpuInfo::get_cpu_info(),
-            desktop: get_desktop(),
-            session_type: get_session_type(),
-            terminal: get_terminal(),
-            editor: get_editor(),
+            desktop: utils::get_desktop(),
+            session_type: utils::get_session_type(),
+            terminal: utils::get_terminal(),
+            editor: utils::get_editor(),
             memory_info: MemoryInfo::get_memory_info(),
             storage_info: StorageInfo::get_storage_info(),
-            shell: get_shell(),
+            shell: utils::get_shell(),
             uptime: uptime::get_uptime(),
-            colors: get_colors(),
+            colors: utils::get_colors(),
         }
     }
 }
@@ -227,79 +226,6 @@ impl Display for NanoFetch {
         }
 
         Ok(())
-    }
-}
-
-fn get_editor() -> String {
-    env::var("EDITOR").unwrap_or("Unknown".to_string())
-}
-
-fn get_terminal() -> String {
-    env::var("TERM_PROGRAM").unwrap_or("Unknown".to_string())
-}
-
-fn get_colors() -> String {
-    let mut colors = String::new();
-
-    for i in 0..8 {
-        colors.push_str(&format!("{}{}{}", colors::color256(i), " ", colors::RESET));
-    }
-
-    colors
-}
-
-fn get_session_type() -> String {
-    env::var("XDG_SESSION_TYPE").unwrap_or("Unknown".to_string())
-}
-
-fn get_system() -> String {
-    let mut sys = "";
-    if let Ok(contents) = fs::read_to_string("/etc/os-release") {
-        contents.lines().for_each(|line| {
-            if line.contains("PRETTY_NAME") {
-                sys = line.split('"').nth(1).unwrap_or("Unknown")
-            }
-        });
-        sys.to_string()
-    } else {
-        "Unknown".to_string()
-    }
-}
-
-fn get_kernel() -> String {
-    // https://man.archlinux.org/man/proc_version.5.en
-    let kernal = fs::read_to_string("/proc/sys/kernel/ostype").unwrap_or("Unknown".to_string());
-    let version = fs::read_to_string("/proc/sys/kernel/osrelease").unwrap_or("Unknown".to_string());
-    format!("{} {}", kernal.trim(), version.trim())
-}
-
-fn get_desktop() -> String {
-    env::var("XDG_CURRENT_DESKTOP").unwrap_or("Unknown".to_string())
-}
-
-fn get_username() -> String {
-    env::var("USER").unwrap_or("Unknown".to_string())
-}
-
-fn get_hostname() -> String {
-    env::var("HOSTNAME")
-        .or_else(|_| {
-            std::fs::read_to_string("/proc/sys/kernel/hostname").map(|s| s.trim().to_string())
-        })
-        .unwrap_or_else(|_| "Unknown".to_string())
-}
-
-fn get_shell() -> String {
-    let shell_path = env::var("SHELL");
-    if let Ok(shell_path) = shell_path {
-        let shell = shell_path
-            .split('/')
-            .last()
-            .unwrap_or("Unknown")
-            .to_string();
-        shell
-    } else {
-        String::from("Unknown")
     }
 }
 
