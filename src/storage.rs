@@ -1,4 +1,3 @@
-use libc;
 use std::ffi::CString;
 use std::fs;
 

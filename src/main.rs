@@ -83,11 +83,10 @@ struct NanoFetch {
 impl NanoFetch {
     pub fn fetch(file_path: Option<PathBuf>) -> Self {
         let mut logo = Vec::new();
-        if let Some(path) = file_path {
-            if let Ok(content) = fs::read_to_string(path) {
+        if let Some(path) = file_path
+            && let Ok(content) = fs::read_to_string(path) {
                 content.lines().for_each(|line| logo.push(line.to_string()))
             }
-        }
 
         if logo.is_empty() {
             LOGO.iter().for_each(|item| logo.push(item.to_string()));
